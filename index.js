@@ -1,4 +1,5 @@
 var timer;
+var qrcode;
 
 new Vue({
   el: "#app",
@@ -134,13 +135,35 @@ new Vue({
     timers: [],
     timerRest: 0,
     timerPause: false,
+    generateQr: false,
   },
   watch: {
     pasteboard(value) {
-      localStorage.setItem("hashrock-calc__pasteboard", value)
+      localStorage.setItem("hashrock-calc__pasteboard", value);
+
+      if(this.generateQr){
+        qrcode.clear();
+        qrcode.makeCode(this.pasteboard);
+      }
     },
     timerSource(value) {
       localStorage.setItem("hashrock-calc__timerSource", value)
+    },
+    generateQr(value){
+      if(!qrcode){
+        qrcode = new QRCode(document.getElementById("qrcode"), {
+          text: "",
+          width: 128,
+          height: 128,
+          colorDark : "#000000",
+          colorLight : "#ffffff",
+          correctLevel : QRCode.CorrectLevel.H
+        });      
+      }
+      if(value){
+        qrcode.clear();
+        qrcode.makeCode(this.pasteboard);
+      }
     }
 
   },
@@ -151,6 +174,6 @@ new Vue({
     if (localStorage.getItem("hashrock-calc__timerSource")) {
       this.timerSource = localStorage.getItem("hashrock-calc__timerSource")
     }
-
+    
   }
 })

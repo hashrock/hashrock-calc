@@ -28,11 +28,13 @@
 
     <hr>
 
-    <h1>メモ帳</h1>
+    <h1>自動保存メモ帳</h1>
     <div>
       <textarea v-model="pasteboard" style="width: 100%; height: 10rem;"></textarea>
-      <p>※LocalStorage自動保存</p>
+      <p><label><input type="checkbox" v-model="generateQr">QR</label></p>
     </div>
+
+    <div v-show="generateQr" id="qrcode"></div>
 
     <code>
       文字数： {{pasteboardLength}}<br>
@@ -67,6 +69,7 @@
 
   <!-- development version, includes helpful console warnings -->
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/davidshimjs-qrcodejs@0.0.2/qrcode.min.js"></script>
   <script src="./index.js"></script>
 
 </body>
