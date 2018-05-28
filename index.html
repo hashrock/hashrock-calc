@@ -8,12 +8,13 @@
   <title>hashrock-calc</title>
   <link rel="stylesheet" href="https://unpkg.com/bootstrap@4.1.0/dist/css/bootstrap-reboot.min.css">
   <style>
-  #app{
-    margin: 0.5rem;
-  }
-  body{
-    background: #EEE;
-  }
+    #app {
+      margin: 0.5rem;
+    }
+
+    body {
+      background: #EEE;
+    }
   </style>
 </head>
 
@@ -33,10 +34,12 @@
       </div>
     </div>
 
+    <hr>
+
     <h1>メモ帳</h1>
     <div>
-        <textarea v-model="pasteboard" style="width: 100%; height: 10rem;"></textarea>
-        <p>※LocalStorage自動保存</p>
+      <textarea v-model="pasteboard" style="width: 100%; height: 10rem;"></textarea>
+      <p>※LocalStorage自動保存</p>
     </div>
 
     <code>
@@ -44,6 +47,31 @@
       数値行合計: {{pasteboardSum}}
     </code>
 
+    <hr>
+
+
+    <h1>ラーメンタイマー</h1>
+
+    <p>テンプレート
+      <button @click="timerSource = '3m'">3分</button>
+      <button @click="timerSource = '5m'">5分</button>
+      <button @click="timerSource = '25m PomodoroEnd\n5m RestEnd'">Pomodoro</button>
+      <br>
+      <textarea name="" id="" cols="30" rows="3" v-model="timerSource"></textarea>
+      <br>
+      <button @click="stopTimer" :disabled="!timerStart">タイマー停止</button>
+      <button @click="pauseTimer" :disabled="!timerStart">一時停止 {{timerPause}}</button>
+      <button @click="startTimer" :disabled="timerStart">タイマー開始</button>
+
+      <p>{{timerRest | toMinute}}</p>
+      <div style="background: white;">
+        
+
+        <div v-for="(timer, i) in timers">
+          {{timer.time | toMinute}}（{{timer.title}}）<span v-if="i === 0" style="color: green;">実行中</span>
+        </div>
+      </div>
+    </p>
   </div>
 
 
@@ -51,33 +79,105 @@
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
   <script>
+    var timer;
+
     new Vue({
       el: "#app",
-      computed:{
-        pasteboardLength(){
-          if(!this.pasteboard){
+      filters: {
+        toMinute(v) {
+          const s = v % 60
+          const m = (v - s) / 60
+          return m + "m" + s + "s"
+        }
+      },
+      computed: {
+        pasteboardLength() {
+          if (!this.pasteboard) {
             return 0
           }
           return this.pasteboard.replace(/\n/g, "").length
         },
-        pasteboardSum(){
-          if(!this.pasteboard){
+        pasteboardSum() {
+          if (!this.pasteboard) {
             return 0
           }
-          return this.pasteboard.split("\n").map((item)=>{
-            if(item === ""){
+          return this.pasteboard.split("\n").map((item) => {
+            if (item === "") {
               return 0
             }
-            if(isNaN(item)){
+            if (isNaN(item)) {
               return 0
             }
             return parseFloat(item)
-          }).reduce((a,b) => {
-            return a+b
+          }).reduce((a, b) => {
+            return a + b
           })
         }
       },
       methods: {
+        tick() {
+          this.timerRest--;
+          if (this.timerRest === 0) {
+            new Notification("完了:" + this.timers[0].title)
+            this.timers.splice(0, 1)
+            if (this.timers.length > 0) {
+              this.timerRest = this.timers[0].time
+            } else {
+              this.stopTimer()
+            }
+          }
+        },
+        pauseTimer() {
+          if (!this.timerPause) {
+            clearInterval(timer)
+          } else {
+            timer = setInterval(() => {
+              this.tick();
+            }, 1000)
+          }
+          this.timerPause = !this.timerPause
+        },
+        startTimer() {
+          this.timerPause = false;
+          if (this.timerSource === "") {
+            return;
+          }
+
+          this.timers = this.timerSource.split("\n").filter(i => i.length > 0).map(i => {
+            let s = i.split(" ")
+            const minuteMatcher = /([0-9]*)m/
+            let m = s[0].match(minuteMatcher)
+            s[0] = s[0].replace(minuteMatcher, "")
+
+            let result = 0;
+            if (m && m[1]) {
+              result += parseInt(m[1], 10) * 60
+            }
+            if (s[0]) {
+              result += parseInt(s[0])
+            }
+
+            return {
+              title: s[1] ? s[1] : i,
+              time: result,
+            }
+          })
+
+          Notification.requestPermission().then((permission) => {
+            if (permission === "granted") {
+              this.timerStart = true;
+              this.timerRest = this.timers[0].time
+              timer = setInterval(() => {
+                this.tick();
+              }, 1000)
+            }
+
+          });
+        },
+        stopTimer() {
+          this.timerStart = false;
+          clearInterval(timer)
+        },
         update(type, ev) {
           let val
           switch (type) {
@@ -109,17 +209,30 @@
         hex: "",
         decimal: "",
         binary: "",
-        pasteboard: ""
+        pasteboard: "",
+        timerSource: "",
+        timerStart: false,
+        timers: [],
+        timerRest: 0,
+        timerPause: false,
       },
-      watch:{
-        pasteboard(value){
+      watch: {
+        pasteboard(value) {
           localStorage.setItem("hashrock-calc__pasteboard", value)
+        },
+        timerSource(value) {
+          localStorage.setItem("hashrock-calc__timerSource", value)
         }
+        
       },
-      mounted(){
-        if(localStorage.getItem("hashrock-calc__pasteboard")){
+      mounted() {
+        if (localStorage.getItem("hashrock-calc__pasteboard")) {
           this.pasteboard = localStorage.getItem("hashrock-calc__pasteboard")
         }
+        if (localStorage.getItem("hashrock-calc__timerSource")) {
+          this.timerSource = localStorage.getItem("hashrock-calc__timerSource")
+        }
+
       }
     })
 
