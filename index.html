@@ -31,7 +31,11 @@
     <h1>自動保存メモ帳</h1>
     <div>
       <textarea v-model="pasteboard" style="width: 100%; height: 10rem;"></textarea>
-      <p><label><input type="checkbox" v-model="generateQr">QR</label></p>
+      <p>
+        <label><input type="checkbox" v-model="generateQr">QR</label>
+        <button @click="printMarkdown">印刷用Markdown</button>
+      
+      </p>
     </div>
 
     <div v-show="generateQr" id="qrcode"></div>
@@ -70,6 +74,7 @@
   <!-- development version, includes helpful console warnings -->
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/davidshimjs-qrcodejs@0.0.2/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/8.4.1/markdown-it.min.js"></script>
   <script src="./index.js"></script>
 
 </body>

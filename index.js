@@ -35,6 +35,23 @@ new Vue({
     }
   },
   methods: {
+    printMarkdown() {
+      var win = window.open("", 'newtab');
+      var md = markdownit().render(this.pasteboard)
+      const html = `
+      <html>
+      <head>
+      <title></title>
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/2.10.0/github-markdown.min.css">
+      </head>
+      <body>
+        ${md}
+      </body>
+      </html>
+      `
+
+      win.document.write(html);
+    },
     tick() {
       this.timerRest--;
       if (this.timerRest === 0) {
@@ -141,7 +158,7 @@ new Vue({
     pasteboard(value) {
       localStorage.setItem("hashrock-calc__pasteboard", value);
 
-      if(this.generateQr){
+      if (this.generateQr) {
         qrcode.clear();
         qrcode.makeCode(this.pasteboard);
       }
@@ -149,22 +166,23 @@ new Vue({
     timerSource(value) {
       localStorage.setItem("hashrock-calc__timerSource", value)
     },
-    generateQr(value){
-      if(!qrcode){
+    generateQr(value) {
+      if (!qrcode) {
         qrcode = new QRCode(document.getElementById("qrcode"), {
           text: "",
           width: 128,
           height: 128,
-          colorDark : "#000000",
-          colorLight : "#ffffff",
-          correctLevel : QRCode.CorrectLevel.H
-        });      
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H
+        });
       }
-      if(value){
+      if (value) {
         qrcode.clear();
         qrcode.makeCode(this.pasteboard);
       }
-    }
+    },
+
 
   },
   mounted() {
@@ -174,6 +192,6 @@ new Vue({
     if (localStorage.getItem("hashrock-calc__timerSource")) {
       this.timerSource = localStorage.getItem("hashrock-calc__timerSource")
     }
-    
+
   }
 })
