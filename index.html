@@ -16,13 +16,13 @@
     <h1>16進数変換</h1>
     <div>
       <div class="number__wrapper">
-        <input class="numberInput" type="text" v-model="hex" @input="update('hex', $event)"> : 16進数 / hex
+        <input class="numberInput" spellcheck="false" type="text" v-model="hex" @input="update('hex', $event)"> : 16進数 / hex
       </div>
       <div class="number__wrapper">
-        <input class="numberInput" type="text" v-model="decimal" @input="update('decimal', $event)"> : 10進数 / decimal
+        <input class="numberInput" spellcheck="false" type="text" v-model="decimal" @input="update('decimal', $event)"> : 10進数 / decimal
       </div>
       <div class="number__wrapper">
-        <input class="numberInput" type="text" v-model="binary" @input="update('binary', $event)"> : 2進数 / binary
+        <input class="numberInput" spellcheck="false" type="text" v-model="binary" @input="update('binary', $event)"> : 2進数 / binary
       </div>
     </div>
 
