@@ -45,32 +45,7 @@
       数値行合計: {{pasteboardSum}}
     </code>
 
-    <hr>
-
-
-    <h1>ラーメンタイマー</h1>
-
-    <p>テンプレート
-      <button @click="timerSource = '3m'">3分</button>
-      <button @click="timerSource = '5m'">5分</button>
-      <button @click="timerSource = '25m PomodoroEnd\n5m RestEnd'">Pomodoro</button>
-      <br>
-      <textarea name="" id="" cols="30" rows="3" v-model="timerSource"></textarea>
-      <br>
-      <button @click="stopTimer" :disabled="!timerStart">タイマー停止</button>
-      <button @click="pauseTimer" :disabled="!timerStart">一時停止 {{timerPause}}</button>
-      <button @click="startTimer" :disabled="timerStart">タイマー開始</button>
-
-      <p>{{timerRest | toMinute}}</p>
-      <div style="background: white;">
-        <div v-for="(timer, i) in timers">
-          {{timer.time | toMinute}}（{{timer.title}}）
-          <span v-if="i === 0" style="color: green;">実行中</span>
-        </div>
-      </div>
-    </p>
   </div>
-
   <!-- development version, includes helpful console warnings -->
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/davidshimjs-qrcodejs@0.0.2/qrcode.min.js"></script>
