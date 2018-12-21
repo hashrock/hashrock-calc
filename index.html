@@ -15,14 +15,14 @@
   <div id="app">
     <h1>16進数変換</h1>
     <div>
-      <div>
-        <input type="text" v-model="hex" @input="update('hex', $event)"> : 16進数 / hex
+      <div class="number__wrapper">
+        <input class="numberInput" type="text" v-model="hex" @input="update('hex', $event)"> : 16進数 / hex
       </div>
-      <div>
-        <input type="text" v-model="decimal" @input="update('decimal', $event)"> : 10進数 / decimal
+      <div class="number__wrapper">
+        <input class="numberInput" type="text" v-model="decimal" @input="update('decimal', $event)"> : 10進数 / decimal
       </div>
-      <div>
-        <input type="text" v-model="binary" @input="update('binary', $event)"> : 2進数 / binary
+      <div class="number__wrapper">
+        <input class="numberInput" type="text" v-model="binary" @input="update('binary', $event)"> : 2進数 / binary
       </div>
     </div>
 

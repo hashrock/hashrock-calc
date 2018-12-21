@@ -1,5 +1,13 @@
 var qrcode;
 
+function zeroPad(input, length) {
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += "0";
+  }
+  return (result + input).slice(-1 * length);
+}
+
 new Vue({
   el: "#app",
   computed: {
@@ -49,26 +57,35 @@ new Vue({
     },
     update(type, ev) {
       let val;
+      let bytes = 0;
       switch (type) {
         case "hex":
           val = this.hex.replace(/ /g, "");
+          //バイト数を考慮してzeropad
+          bytes = Math.ceil(val.length / 2);
+
           if (val) {
             this.decimal = parseInt(val, 16);
-            this.binary = this.decimal.toString(2);
+            this.binary = zeroPad(this.decimal.toString(2), bytes * 8);
           }
           break;
         case "decimal":
           val = parseInt(this.decimal, 10);
           if (val) {
-            this.hex = val.toString(16);
-            this.binary = val.toString(2);
+            const hexSrc = val.toString(16);
+            bytes = Math.ceil(hexSrc.length / 2);
+            this.hex = zeroPad(hexSrc, bytes * 2);
+            this.binary = zeroPad(val.toString(2), bytes * 8);
           }
           break;
         case "binary":
           val = this.binary.replace(/ /g, "");
+          //バイト数を考慮してzeropad
+          bytes = Math.ceil(val.length / 8);
+
           if (val) {
             this.decimal = parseInt(val, 2);
-            this.hex = this.decimal.toString(16);
+            this.hex = zeroPad(this.decimal.toString(16), bytes * 2);
           }
           break;
       }
